@@ -19,6 +19,6 @@ def save_cleaned_data(df):
     data_path = os.path.join(script_dir, '..', 'data', 'cleaned_data.csv')
     df.to_csv(data_path, index=False)
 
-df = load_data(filename)
-df = preprocess_data(df)
-save_cleaned_data(df)
+# df = load_data(filename)
+# df = preprocess_data(df)
+# save_cleaned_data(df)
