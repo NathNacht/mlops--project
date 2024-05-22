@@ -14,31 +14,29 @@ def get_model(X_train):
 
     # Numerical preprocessing
     numerical_pipeline = make_pipeline(
-    SimpleImputer(strategy='mean'),
-    StandardScaler()
+        SimpleImputer(strategy='mean'),
+        StandardScaler()
     )
 
     # Categorical preprocessing
     categorical_pipeline = make_pipeline(
-    OneHotEncoder(handle_unknown='ignore')
+        OneHotEncoder(handle_unknown='ignore')
     )
 
     # ColumnTransformer 
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('cat', categorical_pipeline, categorical_cols),
-        ('num', numerical_pipeline, numerical_cols) 
-    ],
+        transformers=[
+            ('cat', categorical_pipeline, categorical_cols),
+            ('num', numerical_pipeline, numerical_cols) 
+        ],
     remainder='passthrough'
     )
 
-    model = RandomForestClassifier()
-
     # A pipeline that includes the above
-    model_pipe = ImbPipeline([
+    pipeline = ImbPipeline([
         ('preprocessor', preprocessor),
         ('smote', SMOTE(random_state=42)),
-        ('randomforestclassifier', model)
+        ('classifier', RandomForestClassifier())
     ])
 
-    return model_pipe
+    return pipeline
