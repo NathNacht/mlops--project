@@ -11,7 +11,7 @@ COPY . /opt/
 
 WORKDIR /opt
 
-EXPOSE 8000 5000
+EXPOSE 5000
 
 # Set entrypoint for MLflow
 CMD ["bash", "-c", "mlflow server --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 5000"]

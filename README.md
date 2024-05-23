@@ -5,6 +5,9 @@
 ![MLFLOW](https://img.shields.io/badge/mlflow-1f425f?style=for-the-badge&logo=mlflow&logoColor=white)
 ![Terraform](https://img.shields.io/badge/terraform-000000?style=for-the-badge&logo=terraform&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-2496ed?style=for-the-badge&logo=docker&logoColor=white)
+![Databricks](https://img.shields.io/badge/databricks-000000?style=for-the-badge&logo=databricks&logoColor=white)
+![Pandas](https://img.shields.io/badge/pandas-1F425F?style=for-the-badge&logo=pandas&logoColor=white)
+![Scikit-learn](https://img.shields.io/badge/scikit-learn-3670A0?style=for-the-badge&logo=scikit-learn&logoColor=white)
 
 
 ## 👀 Introduction
@@ -26,7 +29,17 @@ Aim of this repo is to keep track of experiments with one or more models in the 
 ├── models
 │   ├── __init__.py
 │   └── model_rf.py
+├── terraform
+│   ├── azure_cloud
+│   │   └── main.tf
+│   └── local_dockercontainer
+│       ├── Dockerfile
+│       ├── main.tf
+│       ├── requirements.txt
+│       └── terraform.tfstate
+├── mlflow_on_databricks.ipynb
 ├── requirements.txt
+├── README.md
 └── utils
     ├── __init__.py
     ├── data_preprocessing.py
@@ -43,7 +56,7 @@ $ python3 experiments/experiment_rf.py
 
 ## 🚀 Running an experiment on the MLFlow in a docker container (build with Terraform)
 
-From the root run:
+From the terraform/local_dockercontainer directory run:
 
 ```bash
 $ terraform init
@@ -53,7 +66,7 @@ $ terraform init
 $ terraform apply
 ```
 
-Once the dockercontainer is up and running, run:
+Once the dockercontainer is up and running, run from the root:
 
 ```bash
 $ python3 experiments/experiment_random_forest.py
@@ -61,6 +74,13 @@ $ python3 experiments/experiment_random_forest.py
 
 Experiments are logged in the MLFlow UI running in the dockercontainer.
 From the localhost it is accessible at http://localhost:5000
+
+
+## 🚀 Running an experiment on databricks MLFlow
+
+The ```mlflow_on_databricks.ipynb``` can be used to run an experiment on Databricks. For this Databricks Community Edition is used.
+
+![alt text](image.png)
 
 
 ## Metrics
