@@ -80,7 +80,7 @@ From the localhost it is accessible at http://localhost:5000
 
 The ```mlflow_on_databricks.ipynb``` can be used to run an experiment on Databricks. For this Databricks Community Edition is used.
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 
 ## Metrics
