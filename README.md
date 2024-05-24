@@ -96,3 +96,8 @@ The ROC AUC (Receiver Operating Characteristic - Area Under Curve) score evaluat
 
 
 ### Classification Report
+
+
+## 📜 Timeline
+
+This project was created in 9 days.

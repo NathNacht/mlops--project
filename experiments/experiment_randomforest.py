@@ -2,9 +2,11 @@ import os
 import sys
 import mlflow
 import mlflow.sklearn
+import pandas as pd
 from sklearn.metrics import roc_auc_score, classification_report, make_scorer, RocCurveDisplay, PrecisionRecallDisplay
 from sklearn.model_selection import cross_validate, train_test_split
 from mlflow.models.signature import infer_signature
+from typing import Tuple
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -13,6 +15,7 @@ import matplotlib.pyplot as plt
 from utils.data_preprocessing import load_data, preprocess_data
 from utils.model_utils import train_model, evaluate_model
 from models.model_rf import get_model
+from typing import Dict, Any
 
 # Setting the MLflow tracking server
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
@@ -25,17 +28,33 @@ filename = 'BankChurners.csv'
 df = load_data(filename)
 df = preprocess_data(df)
 
-def split_data(df):
+def split_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Split the data into train and test sets
+
+    Parameters:
+    df (pd.DataFrame): The input dataframe containing the data.
+    
+    Returns:
+    Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: The training and testing data and labels.
     """
     X = df.drop('Attrition_Flag', axis=1)
     y = df['Attrition_Flag']
     return train_test_split(X, y, test_size=0.2, random_state=42)
 
-def log_model_and_metrics(trained_model, X_train, y_train, X_test, y_test, evaluation_results):
+def log_model_and_metrics(trained_model: Any, X_train: pd.DataFrame, y_train: pd.Series, evaluation_results: Dict[str, Any]) -> None:
     """
-    Log the model and metrics. Model signature prints input and output schema of the model
+    Logs the trained model and evaluation metrics.
+
+    Parameters:
+    trained_model (Any): The trained machine learning model.
+    X_train (pd.DataFrame): The features used for training the model.
+    y_train (pd.Series): The target variable used for training the model.
+    evaluation_results (Dict[str, Any]): A dictionary containing evaluation metrics.
+    model_type (str): The type of the model.
+
+    Returns:
+    None
     """
     # Log the model
     model_signature = infer_signature(X_train, y_train, params={'model_type': 'RandomForest'})
@@ -56,8 +75,17 @@ def log_model_and_metrics(trained_model, X_train, y_train, X_test, y_test, evalu
         f.write(evaluation_results['classification_report'])
     mlflow.log_artifact("metrics/classification_report.txt", artifact_path="metrics")
 
-def save_and_log_plots(trained_model, X_test, y_test):
-    """ Plot the ROC and PR curves
+def save_and_log_plots(trained_model: Any, X_test: pd.DataFrame, y_test: pd.Series) -> None:
+    """
+    Saves and logs ROC and Precision-Recall curves.
+
+    Parameters:
+    trained_model (Any): The trained machine learning model.
+    X_test (pd.DataFrame): The features used for testing the model.
+    y_test (pd.Series): The target variable used for testing the model.
+
+    Returns:
+    None
     """
     roc_display = RocCurveDisplay.from_estimator(trained_model, X_test, y_test)
     plt.title("ROC Curve")
@@ -72,8 +100,17 @@ def save_and_log_plots(trained_model, X_test, y_test):
     plt.close()
     mlflow.log_artifact("metrics/precision_recall_curve.png", artifact_path="metric_graphs")
 
-def cross_validate_model(trained_model, X_train, y_train):
-    """ Cross validation
+def cross_validate_model(trained_model: Any, X_train: pd.DataFrame, y_train: pd.Series) -> None:
+    """
+    Performs cross-validation and prints mean accuracy, fit time, and score time.
+
+    Parameters:
+    trained_model (Any): The trained machine learning model.
+    X_train (pd.DataFrame): The features used for training the model.
+    y_train (pd.Series): The target variable used for training the model.
+
+    Returns:
+    None
     """
     cv_results = cross_validate(trained_model, X_train, y_train, cv=5, scoring='accuracy', return_train_score=True)
     print("Mean Test Accuracy:", round(cv_results['test_score'].mean(), 3))
@@ -96,7 +133,7 @@ with mlflow.start_run() as run:
     print("train_score:", train_score)
 
     evaluation_results = evaluate_model(trained_model, X_test, y_test)
-    log_model_and_metrics(trained_model, X_train, y_train, X_test, y_test, evaluation_results)
+    log_model_and_metrics(trained_model, X_train, y_train, evaluation_results)
 
     test_score = round(trained_model.score(X_test, y_test), 2)
     print("test_score:", test_score)
